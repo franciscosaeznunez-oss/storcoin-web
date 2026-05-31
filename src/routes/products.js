@@ -21,7 +21,7 @@ router.get('/categories', (req, res) => {
 
 // Crear producto (admin)
 router.post('/', authMiddleware, (req, res) => {
-  const { name, category, price, offer_price, is_offer, description, image_url } = req.body;
+  const { name, category, price, offer_price, is_offer, description, image_url, wholesale_price, min_wholesale_qty } = req.body;
   if (!name || !category || !price) {
     return res.status(400).json({ error: 'Nombre, categoría y precio son obligatorios' });
   }
@@ -34,6 +34,8 @@ router.post('/', authMiddleware, (req, res) => {
     is_offer: !!is_offer,
     description: description || null,
     image_url: image_url || null,
+    wholesale_price: wholesale_price ? parseFloat(wholesale_price) : null,
+    min_wholesale_qty: min_wholesale_qty ? parseInt(min_wholesale_qty) : null,
     created_at: new Date().toISOString(),
   };
   products.push(product);
@@ -47,7 +49,7 @@ router.put('/:id', authMiddleware, (req, res) => {
   const products = db.readProducts();
   const idx = products.findIndex(p => p.id === id);
   if (idx === -1) return res.status(404).json({ error: 'Producto no encontrado' });
-  const { name, category, price, offer_price, is_offer, description, image_url } = req.body;
+  const { name, category, price, offer_price, is_offer, description, image_url, wholesale_price, min_wholesale_qty } = req.body;
   products[idx] = {
     ...products[idx],
     name, category,
@@ -56,6 +58,8 @@ router.put('/:id', authMiddleware, (req, res) => {
     is_offer: !!is_offer,
     description: description || null,
     image_url: image_url || null,
+    wholesale_price: wholesale_price ? parseFloat(wholesale_price) : null,
+    min_wholesale_qty: min_wholesale_qty ? parseInt(min_wholesale_qty) : null,
   };
   db.writeProducts(products);
   res.json({ ok: true });
