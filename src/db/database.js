@@ -36,6 +36,10 @@ if (!fs.existsSync(CONFIG_FILE)) {
     schedule: 'Lunes a viernes 8:00 - 18:00',
     hero_subtitle: 'Tu minimarket de confianza',
     min_order: '',
+    bank_cbu: '',
+    bank_alias: '',
+    bank_name: '',
+    bank_holder: '',
   });
 }
 

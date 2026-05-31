@@ -34,6 +34,9 @@
         <a href="#contacto">Contacto</a>
       </nav>
       <button class="btn-whatsapp-sm" id="header-wa">💬 WhatsApp</button>
+      <button class="btn-cart" id="cart-btn" aria-label="Ver carrito">
+        🛒 <span class="cart-badge" id="cart-badge">0</span>
+      </button>
       <button class="hamburger" id="hamburger" aria-label="Menú">&#9776;</button>
     </div>
     <div class="mobile-nav" id="mobileNav">
@@ -185,6 +188,76 @@
       <p class="footer-copy">© <span id="year"></span> StorCoin. Todos los derechos reservados.</p>
     </div>
   </footer>
+
+  <!-- CARRITO SIDEBAR -->
+  <div class="cart-overlay" id="cart-overlay"></div>
+  <aside class="cart-sidebar" id="cart-sidebar">
+    <div class="cart-sidebar-header">
+      <h3>Tu pedido</h3>
+      <button class="cart-sidebar-close" id="cart-close">✕</button>
+    </div>
+    <div class="cart-items" id="cart-items">
+      <p class="cart-empty">Tu carrito está vacío</p>
+    </div>
+    <div class="cart-sidebar-footer">
+      <div class="cart-total-row">
+        <span>Total</span>
+        <strong id="cart-total">$0</strong>
+      </div>
+      <button class="btn-primary cart-checkout-btn" id="cart-checkout-btn">Siguiente paso →</button>
+    </div>
+  </aside>
+
+  <!-- TOAST -->
+  <div class="cart-toast" id="cart-toast"></div>
+
+  <!-- CHECKOUT MODAL -->
+  <div class="checkout-overlay" id="checkout-overlay">
+    <div class="checkout-modal">
+
+      <!-- PASO 1: Transferencia -->
+      <div id="checkout-step1">
+        <div class="checkout-modal-header">
+          <h2>Confirmar pedido</h2>
+          <button class="checkout-close" id="checkout-close">✕</button>
+        </div>
+        <div class="checkout-order-num">
+          Orden <strong id="checkout-order-number">#ORD-00000</strong>
+        </div>
+        <div class="checkout-items-list" id="checkout-items-list"></div>
+        <div class="checkout-total-row">
+          <span>Total a transferir</span>
+          <strong id="checkout-total-display">$0</strong>
+        </div>
+        <div class="checkout-bank-info" id="checkout-bank-info">
+          <h3>Datos para transferir</h3>
+          <div id="bank-details"></div>
+        </div>
+        <button class="btn-primary" id="btn-ya-transferi" style="width:100%;margin-top:20px;padding:16px;font-size:1.05rem">
+          ✅ Ya transferí
+        </button>
+      </div>
+
+      <!-- PASO 2: Confirmación -->
+      <div id="checkout-step2" style="display:none">
+        <div class="checkout-modal-header">
+          <h2>¡Pedido recibido!</h2>
+        </div>
+        <div class="checkout-success">
+          <div class="checkout-success-icon">🎉</div>
+          <p>Tu pedido <strong id="checkout-order-number2"></strong> fue registrado.</p>
+          <p class="checkout-success-sub">Envianos el comprobante por WhatsApp para confirmar tu pedido.</p>
+        </div>
+        <button class="btn-primary btn-whatsapp-order" id="btn-whatsapp-order">
+          💬 Enviar pedido por WhatsApp
+        </button>
+        <button class="btn-secondary btn-new-order" id="btn-new-order">
+          Hacer nuevo pedido
+        </button>
+      </div>
+
+    </div>
+  </div>
 
   <script src="/js/main.js"></script>
 </body>

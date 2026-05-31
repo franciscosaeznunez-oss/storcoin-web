@@ -126,6 +126,8 @@ function closeModal() {
   document.getElementById('productId').value = '';
   document.getElementById('uploadPreview').innerHTML = '';
   document.getElementById('productError').textContent = '';
+  document.getElementById('pWholesalePrice').value = '';
+  document.getElementById('pMinWholesaleQty').value = '';
   currentImageUrl = null;
   isOffer = false;
   setOfferToggle(false);
@@ -147,6 +149,8 @@ function openEdit(id) {
   document.getElementById('pPrice').value = p.price;
   document.getElementById('pDesc').value = p.description || '';
   document.getElementById('pOfferPrice').value = p.offer_price || '';
+  document.getElementById('pWholesalePrice').value = p.wholesale_price || '';
+  document.getElementById('pMinWholesaleQty').value = p.min_wholesale_qty || '';
   currentImageUrl = p.image_url || null;
   if (p.image_url) {
     document.getElementById('uploadPreview').innerHTML = `<img src="${p.image_url}" />`;
@@ -196,6 +200,8 @@ document.getElementById('productForm').addEventListener('submit', async (e) => {
   saveBtn.disabled = true; saveBtn.textContent = 'Guardando...'; errEl.textContent = '';
 
   const id = document.getElementById('productId').value;
+  const wholesalePrice = document.getElementById('pWholesalePrice').value;
+  const minWholesaleQty = document.getElementById('pMinWholesaleQty').value;
   const body = {
     name: document.getElementById('pName').value,
     category: document.getElementById('pCategory').value,
@@ -204,6 +210,8 @@ document.getElementById('productForm').addEventListener('submit', async (e) => {
     is_offer: isOffer,
     offer_price: isOffer ? document.getElementById('pOfferPrice').value : null,
     image_url: currentImageUrl,
+    wholesale_price: wholesalePrice ? Number(wholesalePrice) : null,
+    min_wholesale_qty: minWholesaleQty ? Number(minWholesaleQty) : null,
   };
 
   try {

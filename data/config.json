@@ -6,5 +6,9 @@
   "address": "Del Tranque 1499, 8165229 Cordillera",
   "schedule": "Lun-Vie 7:30-21:00 · Sáb 8:00-21:00 · Dom y feriados 8:30-20:30",
   "hero_subtitle": "Tu minimarket de confianza",
-  "min_order": ""
+  "min_order": "",
+  "bank_cbu": "",
+  "bank_alias": "",
+  "bank_name": "",
+  "bank_holder": ""
 }

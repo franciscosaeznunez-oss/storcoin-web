@@ -88,14 +88,265 @@ function formatPrice(n) {
   return '$' + Number(n).toLocaleString('es-AR', { minimumFractionDigits: 0 });
 }
 
+// ===== CARRITO =====
+const CART_KEY = 'storcoin_cart';
+
+function getCart() {
+  try { return JSON.parse(localStorage.getItem(CART_KEY)) || []; }
+  catch { return []; }
+}
+
+function saveCart(cart) {
+  localStorage.setItem(CART_KEY, JSON.stringify(cart));
+}
+
+function getCartTotal() {
+  return getCart().reduce((sum, item) => sum + item.unit_price * item.qty, 0);
+}
+
+function getCartCount() {
+  return getCart().reduce((sum, item) => sum + item.qty, 0);
+}
+
+function updateCartBadge() {
+  const count = getCartCount();
+  const badge = document.getElementById('cart-badge');
+  badge.textContent = count;
+  badge.classList.toggle('visible', count > 0);
+  document.getElementById('cart-btn').classList.toggle('has-items', count > 0);
+}
+
+function showToast(msg) {
+  const toast = document.getElementById('cart-toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2000);
+}
+
+function addToCart(product, type) {
+  const cart = getCart();
+  const unitPrice = type === 'wholesale'
+    ? product.wholesale_price
+    : (product.is_offer && product.offer_price ? product.offer_price : product.price);
+  const minQty = type === 'wholesale' ? (product.min_wholesale_qty || 1) : 1;
+  const key = `${product.id}_${type}`;
+  const existing = cart.find(i => i.key === key);
+
+  if (existing) {
+    existing.qty += 1;
+  } else {
+    cart.push({
+      key,
+      id: product.id,
+      name: product.name,
+      image_url: product.image_url,
+      category: product.category,
+      type,
+      qty: minQty,
+      unit_price: unitPrice,
+      min_qty: minQty,
+    });
+  }
+
+  saveCart(cart);
+  updateCartBadge();
+  renderCart();
+  showToast(type === 'wholesale' ? '✅ Agregado (mayor)' : '✅ Agregado al carrito');
+}
+
+function removeFromCart(key) {
+  saveCart(getCart().filter(i => i.key !== key));
+  updateCartBadge();
+  renderCart();
+}
+
+function updateQty(key, delta) {
+  const cart = getCart();
+  const item = cart.find(i => i.key === key);
+  if (!item) return;
+  const newQty = item.qty + delta;
+  if (newQty < item.min_qty) {
+    removeFromCart(key);
+    return;
+  }
+  item.qty = newQty;
+  saveCart(cart);
+  updateCartBadge();
+  renderCart();
+}
+
+function renderCart() {
+  const cart = getCart();
+  const itemsEl = document.getElementById('cart-items');
+  const totalEl = document.getElementById('cart-total');
+  const checkoutBtn = document.getElementById('cart-checkout-btn');
+
+  if (!cart.length) {
+    itemsEl.innerHTML = '<p class="cart-empty">Tu carrito está vacío</p>';
+    totalEl.textContent = '$0';
+    checkoutBtn.disabled = true;
+    return;
+  }
+
+  checkoutBtn.disabled = false;
+  itemsEl.innerHTML = cart.map(item => `
+    <div class="cart-item">
+      <div class="cart-item-img">
+        ${item.image_url
+          ? `<img src="${item.image_url}" alt="${item.name}" />`
+          : `<div class="cart-item-img-placeholder">${CATEGORY_ICONS[item.category] || '📦'}</div>`}
+      </div>
+      <div class="cart-item-info">
+        <span class="cart-item-name">${item.name}</span>
+        <span class="cart-item-tag ${item.type === 'wholesale' ? 'tag-wholesale' : 'tag-retail'}">
+          ${item.type === 'wholesale' ? 'Mayor' : 'Detalle'}
+        </span>
+        <div class="cart-item-qty">
+          <button class="qty-btn" data-key="${item.key}" data-delta="-1">−</button>
+          <span>${item.qty}</span>
+          <button class="qty-btn" data-key="${item.key}" data-delta="1">+</button>
+          ${item.min_qty > 1 ? `<span class="cart-item-min">mín. ${item.min_qty}</span>` : ''}
+        </div>
+      </div>
+      <div class="cart-item-right">
+        <span class="cart-item-price">${formatPrice(item.unit_price * item.qty)}</span>
+        <button class="cart-item-remove" data-key="${item.key}">✕</button>
+      </div>
+    </div>
+  `).join('');
+
+  totalEl.textContent = formatPrice(getCartTotal());
+
+  itemsEl.querySelectorAll('.qty-btn').forEach(btn => {
+    btn.addEventListener('click', () => updateQty(btn.dataset.key, parseInt(btn.dataset.delta)));
+  });
+  itemsEl.querySelectorAll('.cart-item-remove').forEach(btn => {
+    btn.addEventListener('click', () => removeFromCart(btn.dataset.key));
+  });
+}
+
+function openCart() {
+  renderCart();
+  document.getElementById('cart-sidebar').classList.add('open');
+  document.getElementById('cart-overlay').classList.add('open');
+}
+
+function closeCart() {
+  document.getElementById('cart-sidebar').classList.remove('open');
+  document.getElementById('cart-overlay').classList.remove('open');
+}
+
+// ===== CHECKOUT =====
+let currentOrderNumber = '';
+let siteConfig = {};
+
+function generateOrderNumber() {
+  return '#ORD-' + Date.now().toString().slice(-5);
+}
+
+function openCheckout() {
+  const cart = getCart();
+  if (!cart.length) return;
+
+  currentOrderNumber = generateOrderNumber();
+  document.getElementById('checkout-order-number').textContent = currentOrderNumber;
+  document.getElementById('checkout-order-number2').textContent = currentOrderNumber;
+
+  document.getElementById('checkout-items-list').innerHTML = cart.map(item => `
+    <div class="checkout-item">
+      <span class="checkout-item-name">
+        ${item.name}
+        <em class="checkout-item-type">${item.type === 'wholesale' ? '(Mayor)' : '(Detalle)'}</em>
+        × ${item.qty}
+      </span>
+      <span class="checkout-item-price">${formatPrice(item.unit_price * item.qty)}</span>
+    </div>
+  `).join('');
+
+  document.getElementById('checkout-total-display').textContent = formatPrice(getCartTotal());
+
+  const cfg = siteConfig;
+  const fields = [
+    cfg.bank_name   && `<div class="bank-row"><span>Banco</span><strong>${cfg.bank_name}</strong></div>`,
+    cfg.bank_holder && `<div class="bank-row"><span>Titular</span><strong>${cfg.bank_holder}</strong></div>`,
+    cfg.bank_cbu    && `<div class="bank-row"><span>CBU</span><strong class="bank-cbu">${cfg.bank_cbu}</strong></div>`,
+    cfg.bank_alias  && `<div class="bank-row"><span>Alias</span><strong>${cfg.bank_alias}</strong></div>`,
+  ].filter(Boolean);
+
+  document.getElementById('bank-details').innerHTML = fields.length
+    ? fields.join('')
+    : '<p style="color:#7f8c8d;font-size:.9rem">Datos bancarios no configurados aún.</p>';
+
+  document.getElementById('checkout-step1').style.display = 'block';
+  document.getElementById('checkout-step2').style.display = 'none';
+  document.getElementById('checkout-overlay').classList.add('open');
+  closeCart();
+}
+
+function closeCheckout() {
+  document.getElementById('checkout-overlay').classList.remove('open');
+}
+
+function buildWhatsAppMessage() {
+  const cart = getCart();
+  const lines = cart.map(item =>
+    `- ${item.name} x${item.qty} (${item.type === 'wholesale' ? 'Mayor' : 'Detalle'}) — ${formatPrice(item.unit_price * item.qty)}`
+  ).join('\n');
+  return encodeURIComponent(
+    `Hola! Realicé una transferencia para el pedido ${currentOrderNumber}\n\n*Detalle del pedido:*\n${lines}\n\n*Total: ${formatPrice(getCartTotal())}*\n\n¡Quedo a la espera de la confirmación! 🙏`
+  );
+}
+
+// ===== PRODUCT CARD =====
 function productCard(p) {
   const imgHtml = p.image_url
     ? `<img class="product-img" src="${p.image_url}" alt="${p.name}" loading="lazy" />`
     : `<div class="product-img-placeholder">${CATEGORY_ICONS[p.category] || '📦'}</div>`;
+
+  const retailPrice = p.is_offer && p.offer_price ? p.offer_price : p.price;
   const offerBadge = p.is_offer ? `<span class="badge-offer">Oferta</span>` : '';
-  const priceHtml = p.is_offer && p.offer_price
-    ? `<div><span class="product-price-old">${formatPrice(p.price)}</span><br><span class="product-price">${formatPrice(p.offer_price)}</span></div>`
-    : `<span class="product-price">${formatPrice(p.price)}</span>`;
+
+  let pricesHtml, actionsHtml;
+
+  if (p.wholesale_price) {
+    pricesHtml = `
+      <div class="product-prices">
+        <div class="price-block">
+          <span class="price-label">Detalle</span>
+          <div class="price-value">
+            ${p.is_offer && p.offer_price ? `<span class="product-price-old">${formatPrice(p.price)}</span>` : ''}
+            <span class="product-price">${formatPrice(retailPrice)}</span>
+            ${offerBadge}
+          </div>
+        </div>
+        <div class="price-block price-block-wholesale">
+          <span class="price-label">Mayor</span>
+          <div class="price-value">
+            <span class="product-price product-price-wholesale">${formatPrice(p.wholesale_price)}</span>
+            ${p.min_wholesale_qty ? `<span class="price-min-qty">mín. ${p.min_wholesale_qty} u.</span>` : ''}
+          </div>
+        </div>
+      </div>`;
+    actionsHtml = `
+      <div class="product-actions">
+        <button class="btn-add-cart btn-retail" data-id="${p.id}" data-type="retail">+ Detalle</button>
+        <button class="btn-add-cart btn-wholesale" data-id="${p.id}" data-type="wholesale">+ Mayor</button>
+      </div>`;
+  } else {
+    pricesHtml = `
+      <div class="product-prices single">
+        <div class="price-block">
+          ${p.is_offer && p.offer_price ? `<span class="product-price-old">${formatPrice(p.price)}</span>` : ''}
+          <span class="product-price">${formatPrice(retailPrice)}</span>
+          ${offerBadge}
+        </div>
+      </div>`;
+    actionsHtml = `
+      <div class="product-actions">
+        <button class="btn-add-cart btn-retail btn-full" data-id="${p.id}" data-type="retail">+ Agregar</button>
+      </div>`;
+  }
+
   return `
     <div class="product-card">
       ${imgHtml}
@@ -104,17 +355,32 @@ function productCard(p) {
         <span class="product-name">${p.name}</span>
         ${p.description ? `<span class="product-desc">${p.description}</span>` : ''}
       </div>
-      <div class="product-footer">
-        ${priceHtml}
-        ${offerBadge}
-      </div>
+      ${pricesHtml}
+      ${actionsHtml}
     </div>`;
 }
 
+// ===== PRODUCTOS MAP =====
+const productsById = {};
+
+function attachCardListeners(container) {
+  container.querySelectorAll('.btn-add-cart').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const id = parseInt(btn.dataset.id);
+      const type = btn.dataset.type;
+      const product = productsById[id];
+      if (product) addToCart(product, type);
+    });
+  });
+}
+
+// ===== CONFIG =====
 async function loadConfig() {
   try {
     const res = await fetch(`${API}/api/config`);
     const cfg = await res.json();
+    siteConfig = cfg;
     const wa = cfg.whatsapp || '';
     const waLink = `https://wa.me/${wa.replace(/\D/g, '')}`;
     document.getElementById('hero-title').innerHTML = cfg.business_name || 'StorCoin';
@@ -136,6 +402,7 @@ async function loadConfig() {
   } catch (e) { console.error('Error config:', e); }
 }
 
+// ===== OFERTAS =====
 async function loadOffers() {
   const grid = document.getElementById('offers-grid');
   try {
@@ -145,10 +412,13 @@ async function loadOffers() {
       grid.innerHTML = '<p class="empty">No hay ofertas por el momento.</p>';
       return;
     }
+    products.forEach(p => productsById[p.id] = p);
     grid.innerHTML = products.map(productCard).join('');
+    attachCardListeners(grid);
   } catch (e) { grid.innerHTML = '<p class="empty">Error al cargar ofertas.</p>'; }
 }
 
+// ===== TODOS LOS PRODUCTOS =====
 let allProducts = [];
 let activeCategory = 'all';
 
@@ -161,6 +431,7 @@ async function loadProducts() {
       fetch(`${API}/api/products/categories`),
     ]);
     allProducts = await pRes.json();
+    allProducts.forEach(p => productsById[p.id] = p);
     const categories = await cRes.json();
 
     filterDiv.innerHTML = categories.map(cat =>
@@ -186,9 +457,12 @@ function renderProducts() {
   const filtered = activeCategory === 'all'
     ? allProducts
     : allProducts.filter(p => p.category === activeCategory);
-  grid.innerHTML = filtered.length
-    ? filtered.map(productCard).join('')
-    : '<p class="empty">No hay productos en esta categoría.</p>';
+  if (!filtered.length) {
+    grid.innerHTML = '<p class="empty">No hay productos en esta categoría.</p>';
+    return;
+  }
+  grid.innerHTML = filtered.map(productCard).join('');
+  attachCardListeners(grid);
 }
 
 function renderCategories(categories) {
@@ -212,6 +486,7 @@ function renderCategories(categories) {
   });
 }
 
+// ===== EVENT LISTENERS =====
 document.getElementById('hamburger').addEventListener('click', () => {
   document.getElementById('mobileNav').classList.toggle('open');
 });
@@ -227,6 +502,35 @@ document.querySelectorAll('.filter-btn[data-cat="all"]').forEach(btn => {
   });
 });
 
+document.getElementById('cart-btn').addEventListener('click', openCart);
+document.getElementById('cart-close').addEventListener('click', closeCart);
+document.getElementById('cart-overlay').addEventListener('click', closeCart);
+document.getElementById('cart-checkout-btn').addEventListener('click', openCheckout);
+
+document.getElementById('checkout-close').addEventListener('click', closeCheckout);
+document.getElementById('checkout-overlay').addEventListener('click', (e) => {
+  if (e.target === document.getElementById('checkout-overlay')) closeCheckout();
+});
+
+document.getElementById('btn-ya-transferi').addEventListener('click', () => {
+  document.getElementById('checkout-step1').style.display = 'none';
+  document.getElementById('checkout-step2').style.display = 'block';
+});
+
+document.getElementById('btn-whatsapp-order').addEventListener('click', () => {
+  const wa = (siteConfig.whatsapp || '').replace(/\D/g, '');
+  window.open(`https://wa.me/${wa}?text=${buildWhatsAppMessage()}`, '_blank');
+});
+
+document.getElementById('btn-new-order').addEventListener('click', () => {
+  saveCart([]);
+  updateCartBadge();
+  renderCart();
+  closeCheckout();
+});
+
+// ===== INIT =====
+updateCartBadge();
 loadCarousel();
 loadConfig();
 loadOffers();
