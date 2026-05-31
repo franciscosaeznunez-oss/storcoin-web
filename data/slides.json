@@ -1,0 +1,22 @@
+[
+  {
+    "id": 1,
+    "title": "Compra/Retira sin FILA",
+    "subtitle": "Pedí por mayor y recibí en tu negocio",
+    "button_text": "Ver productos",
+    "button_link": "#productos",
+    "bg_color": "#1a5276",
+    "image_url": null,
+    "order": 0
+  },
+  {
+    "id": 2,
+    "title": "🔥 Ofertas semanales",
+    "subtitle": "Descuentos exclusivos para compradores de la pagina",
+    "button_text": "Ver ofertas",
+    "button_link": "#ofertas",
+    "bg_color": "#145a32",
+    "image_url": null,
+    "order": 1
+  }
+]
