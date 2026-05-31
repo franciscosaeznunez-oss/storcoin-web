@@ -78,9 +78,13 @@
         </div>
       </div>
       <div class="hero-img">
-        <div class="hero-placeholder">
-          <span>🛒</span>
-          <p>StorCoin</p>
+        <div class="hero-logo-wrap">
+          <img id="hero-logo-img" src="/assets/logo.png" alt="StorCoin"
+               onerror="this.style.display='none';document.getElementById('hero-logo-fallback').style.display='flex'" />
+          <div id="hero-logo-fallback" style="display:none" class="hero-placeholder">
+            <span>🛒</span>
+            <p>StorCoin</p>
+          </div>
         </div>
       </div>
     </div>

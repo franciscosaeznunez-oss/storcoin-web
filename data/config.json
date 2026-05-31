@@ -7,8 +7,10 @@
   "schedule": "Lun-Vie 7:30-21:00 · Sáb 8:00-21:00 · Dom y feriados 8:30-20:30",
   "hero_subtitle": "Tu minimarket de confianza",
   "min_order": "",
-  "bank_cbu": "",
-  "bank_alias": "",
+  "bank_holder": "",
+  "bank_rut": "",
   "bank_name": "",
-  "bank_holder": ""
+  "bank_account_type": "",
+  "bank_account_number": "",
+  "bank_email": ""
 }

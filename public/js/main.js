@@ -267,10 +267,12 @@ function openCheckout() {
 
   const cfg = siteConfig;
   const fields = [
-    cfg.bank_name   && `<div class="bank-row"><span>Banco</span><strong>${cfg.bank_name}</strong></div>`,
-    cfg.bank_holder && `<div class="bank-row"><span>Titular</span><strong>${cfg.bank_holder}</strong></div>`,
-    cfg.bank_cbu    && `<div class="bank-row"><span>CBU</span><strong class="bank-cbu">${cfg.bank_cbu}</strong></div>`,
-    cfg.bank_alias  && `<div class="bank-row"><span>Alias</span><strong>${cfg.bank_alias}</strong></div>`,
+    cfg.bank_holder       && `<div class="bank-row"><span>Nombre</span><strong>${cfg.bank_holder}</strong></div>`,
+    cfg.bank_rut          && `<div class="bank-row"><span>RUT</span><strong>${cfg.bank_rut}</strong></div>`,
+    cfg.bank_name         && `<div class="bank-row"><span>Banco</span><strong>${cfg.bank_name}</strong></div>`,
+    cfg.bank_account_type && `<div class="bank-row"><span>Tipo de cuenta</span><strong>${cfg.bank_account_type}</strong></div>`,
+    cfg.bank_account_number && `<div class="bank-row"><span>N° de cuenta</span><strong class="bank-cbu">${cfg.bank_account_number}</strong></div>`,
+    cfg.bank_email        && `<div class="bank-row"><span>Email</span><strong>${cfg.bank_email}</strong></div>`,
   ].filter(Boolean);
 
   document.getElementById('bank-details').innerHTML = fields.length
@@ -392,6 +394,8 @@ async function loadConfig() {
     document.getElementById('contact-address').textContent = cfg.address || '';
     document.getElementById('contact-schedule').textContent = cfg.schedule || '';
     document.getElementById('footer-text').textContent = cfg.hero_subtitle || '';
+    const heroLogoImg = document.getElementById('hero-logo-img');
+    if (heroLogoImg && cfg.logo_url) heroLogoImg.src = cfg.logo_url;
     const setBtnLink = (id) => {
       const btn = document.getElementById(id);
       if (btn) btn.onclick = () => window.open(waLink, '_blank');
