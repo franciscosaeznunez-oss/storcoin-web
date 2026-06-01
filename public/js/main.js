@@ -251,6 +251,9 @@ function openCheckout() {
   currentOrderNumber = generateOrderNumber();
   document.getElementById('checkout-order-number').textContent = currentOrderNumber;
   document.getElementById('checkout-order-number2').textContent = currentOrderNumber;
+  document.getElementById('customer-name').value = '';
+  document.getElementById('customer-phone').value = '';
+  document.getElementById('customer-name-error').textContent = '';
 
   document.getElementById('checkout-items-list').innerHTML = cart.map(item => `
     <div class="checkout-item">
@@ -291,11 +294,17 @@ function closeCheckout() {
 
 function buildWhatsAppMessage() {
   const cart = getCart();
+  const name = document.getElementById('customer-name').value.trim();
+  const phone = document.getElementById('customer-phone').value.trim();
   const lines = cart.map(item =>
     `- ${item.name} x${item.qty} (${item.type === 'wholesale' ? 'Mayor' : 'Detalle'}) — ${formatPrice(item.unit_price * item.qty)}`
   ).join('\n');
+  const clientInfo = [
+    name  && `*Cliente:* ${name}`,
+    phone && `*Teléfono:* ${phone}`,
+  ].filter(Boolean).join('\n');
   return encodeURIComponent(
-    `Hola! Realicé una transferencia para el pedido ${currentOrderNumber}\n\n*Detalle del pedido:*\n${lines}\n\n*Total: ${formatPrice(getCartTotal())}*\n\n¡Quedo a la espera de la confirmación! 🙏`
+    `Hola! Realicé una transferencia para el pedido ${currentOrderNumber}\n\n${clientInfo}\n\n*Detalle del pedido:*\n${lines}\n\n*Total: ${formatPrice(getCartTotal())}*\n\n¡Quedo a la espera de la confirmación! 🙏`
   );
 }
 
@@ -517,6 +526,15 @@ document.getElementById('checkout-overlay').addEventListener('click', (e) => {
 });
 
 document.getElementById('btn-ya-transferi').addEventListener('click', () => {
+  const name = document.getElementById('customer-name').value.trim();
+  const errEl = document.getElementById('customer-name-error');
+  if (!name) {
+    errEl.textContent = 'Por favor ingresá tu nombre para continuar.';
+    document.getElementById('customer-name').focus();
+    return;
+  }
+  errEl.textContent = '';
+  document.getElementById('checkout-order-number2').textContent = `${currentOrderNumber} · ${name}`;
   document.getElementById('checkout-step1').style.display = 'none';
   document.getElementById('checkout-step2').style.display = 'block';
 });

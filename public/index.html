@@ -225,6 +225,20 @@
           <h2>Confirmar pedido</h2>
           <button class="checkout-close" id="checkout-close">✕</button>
         </div>
+        <!-- Datos del cliente -->
+        <div class="checkout-customer-form">
+          <h3>Tus datos</h3>
+          <div class="checkout-field">
+            <label>Nombre completo *</label>
+            <input type="text" id="customer-name" placeholder="Ej: Juan García" />
+            <span class="checkout-field-error" id="customer-name-error"></span>
+          </div>
+          <div class="checkout-field">
+            <label>Teléfono (opcional)</label>
+            <input type="tel" id="customer-phone" placeholder="Ej: +56 9 1234 5678" />
+          </div>
+        </div>
+
         <div class="checkout-order-num">
           Orden <strong id="checkout-order-number">#ORD-00000</strong>
         </div>
@@ -250,7 +264,10 @@
         <div class="checkout-success">
           <div class="checkout-success-icon">🎉</div>
           <p>Tu pedido <strong id="checkout-order-number2"></strong> fue registrado.</p>
-          <p class="checkout-success-sub">Envianos el comprobante por WhatsApp para confirmar tu pedido.</p>
+          <p class="checkout-success-sub">Tu pedido fue registrado correctamente.</p>
+        </div>
+        <div class="checkout-comprobante-msg">
+          📎 Por favor envianos el <strong>comprobante de transferencia</strong> por WhatsApp para confirmar y procesar tu pedido.
         </div>
         <button class="btn-primary btn-whatsapp-order" id="btn-whatsapp-order">
           💬 Enviar pedido por WhatsApp

@@ -426,6 +426,21 @@ button { cursor: pointer; font-family: inherit; }
 .bank-row span { color: var(--text-light); }
 .bank-row strong { font-weight: 700; }
 .bank-cbu { font-size: .82rem; letter-spacing: .02em; }
+.checkout-customer-form { margin-bottom: 20px; }
+.checkout-customer-form h3 { font-size: .95rem; font-weight: 700; margin-bottom: 12px; color: var(--text); }
+.checkout-field { display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px; }
+.checkout-field label { font-size: .82rem; font-weight: 600; color: var(--text-light); }
+.checkout-field input {
+  border: 1.5px solid #e2e8f0; border-radius: 8px;
+  padding: 10px 14px; font-size: .95rem; font-family: inherit;
+  transition: border-color .15s;
+}
+.checkout-field input:focus { outline: none; border-color: var(--green); }
+.checkout-field-error { font-size: .78rem; color: #e74c3c; font-weight: 600; }
+.checkout-comprobante-msg {
+  background: #fffbea; border: 1.5px solid #f6c90e; border-radius: 10px;
+  padding: 14px 16px; font-size: .88rem; margin-top: 16px; line-height: 1.5;
+}
 .checkout-success { text-align: center; padding: 20px 0; }
 .checkout-success-icon { font-size: 4rem; margin-bottom: 16px; }
 .checkout-success p { font-size: 1rem; font-weight: 600; }
