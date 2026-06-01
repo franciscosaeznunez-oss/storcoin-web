@@ -195,7 +195,8 @@ button { cursor: pointer; font-family: inherit; }
 }
 .product-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-hover); }
 .product-img {
-  width: 100%; height: 180px; object-fit: cover; background: var(--gray);
+  width: 100%; height: 180px; object-fit: contain; background: var(--gray);
+  padding: 12px;
 }
 .product-img-placeholder {
   width: 100%; height: 180px; background: var(--green-light);
