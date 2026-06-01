@@ -134,6 +134,12 @@ function addToCart(product, type) {
 
   if (existing) {
     existing.qty += 1;
+    if (checkWholesaleUpgrade(cart, existing, existing.qty)) {
+      saveCart(cart);
+      updateCartBadge();
+      renderCart();
+      return;
+    }
   } else {
     cart.push({
       key,
@@ -160,6 +166,31 @@ function removeFromCart(key) {
   renderCart();
 }
 
+function checkWholesaleUpgrade(cart, item, newQty) {
+  if (item.type !== 'retail') return false;
+  const product = productsById[item.id];
+  if (!product || !product.wholesale_price || !product.min_wholesale_qty) return false;
+  if (newQty < product.min_wholesale_qty) return false;
+
+  const wholesaleKey = `${item.id}_wholesale`;
+  const existingWholesale = cart.find(i => i.key === wholesaleKey);
+
+  if (existingWholesale) {
+    existingWholesale.qty += newQty;
+    const idx = cart.indexOf(item);
+    cart.splice(idx, 1);
+  } else {
+    item.key = wholesaleKey;
+    item.type = 'wholesale';
+    item.unit_price = product.wholesale_price;
+    item.min_qty = product.min_wholesale_qty;
+    item.qty = newQty;
+  }
+
+  showToast(`✨ ¡Precio mayorista aplicado! ${formatPrice(product.wholesale_price)} c/u`);
+  return true;
+}
+
 function updateQty(key, delta) {
   const cart = getCart();
   const item = cart.find(i => i.key === key);
@@ -170,6 +201,12 @@ function updateQty(key, delta) {
     return;
   }
   item.qty = newQty;
+  if (delta > 0 && checkWholesaleUpgrade(cart, item, newQty)) {
+    saveCart(cart);
+    updateCartBadge();
+    renderCart();
+    return;
+  }
   saveCart(cart);
   updateCartBadge();
   renderCart();
