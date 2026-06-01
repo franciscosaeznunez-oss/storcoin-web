@@ -448,7 +448,7 @@ button { cursor: pointer; font-family: inherit; }
 @media (max-width: 768px) {
   .nav, .btn-whatsapp-sm { display: none; }
   .btn-cart { padding: 7px 10px; font-size: .82rem; }
-  .carousel-slide { height: 220px; }
+  .carousel-slide { height: auto; aspect-ratio: 1400 / 480; }
   .carousel-slide-content { padding: 12px; }
   .carousel-slide-content h2 { font-size: 1.3rem; margin-bottom: 6px; }
   .carousel-slide-content p { font-size: .9rem; margin-bottom: 12px; }
