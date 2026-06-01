@@ -36,12 +36,12 @@ if (!fs.existsSync(CONFIG_FILE)) {
     schedule: 'Lunes a viernes 8:00 - 18:00',
     hero_subtitle: 'Tu minimarket de confianza',
     min_order: '',
-    bank_holder: '',
-    bank_rut: '',
-    bank_name: '',
-    bank_account_type: '',
-    bank_account_number: '',
-    bank_email: '',
+    bank_holder: 'Saez Y Nunez Spa',
+    bank_rut: '77.438.616-5',
+    bank_name: 'Banco Bci',
+    bank_account_type: 'Cuenta corriente en pesos',
+    bank_account_number: '32535759',
+    bank_email: 'francisco.saeznunez@gmail.com',
   });
 }
 
