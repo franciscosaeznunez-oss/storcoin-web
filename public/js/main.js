@@ -79,7 +79,7 @@ function resetAutoplay() {
 
 // ===== CATEGORÍAS =====
 const CATEGORY_ICONS = {
-  'Almacén': '🛒', 'Bebidas': '🥤', 'Lácteos': '🥛', 'Limpieza': '🧹',
+  'Abarrote': '🛒', 'Bebidas': '🥤', 'Lácteos': '🥛', 'Limpieza': '🧹',
   'Carnes': '🥩', 'Frutas': '🍎', 'Verduras': '🥦', 'Panadería': '🥖',
   'Congelados': '🧊', 'Snacks': '🍪', 'Condimentos': '🧂',
 };
