@@ -230,6 +230,14 @@ document.getElementById('productForm').addEventListener('submit', async (e) => {
   }
 });
 
+// ===== TOAST ADMIN =====
+function showAdminToast(msg, type = 'success') {
+  const toast = document.getElementById('admin-toast');
+  toast.textContent = msg;
+  toast.className = `admin-toast ${type} show`;
+  setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
 // ===== DELETE =====
 function confirmDelete(id) {
   deletingId = id;
@@ -251,11 +259,12 @@ document.getElementById('confirmOk').addEventListener('click', async () => {
     if (!res.ok) throw new Error('Error del servidor');
   } catch (err) {
     await loadProducts();
-    alert('Error al eliminar el producto. Intentá de nuevo.');
+    showAdminToast('❌ Error al eliminar. Intentá de nuevo.', 'error');
     return;
   }
   await loadProducts();
   await loadDashboard();
+  showAdminToast('✅ Producto eliminado correctamente');
 });
 
 // ===== LOGO UPLOAD =====

@@ -171,3 +171,11 @@ input[type="file"] { display: none; }
   background: var(--green); color: #fff; border: none; border-radius: 8px;
   padding: 10px 14px; font-size: 1.2rem;
 }
+.admin-toast {
+  position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(20px);
+  padding: 12px 28px; border-radius: 30px; font-size: .9rem; font-weight: 600;
+  z-index: 9999; opacity: 0; pointer-events: none; transition: all .25s; white-space: nowrap;
+}
+.admin-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.admin-toast.success { background: #27ae60; color: #fff; }
+.admin-toast.error { background: #e74c3c; color: #fff; }
