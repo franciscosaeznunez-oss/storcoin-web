@@ -246,7 +246,15 @@ document.getElementById('confirmOk').addEventListener('click', async () => {
   allProducts = allProducts.filter(p => p.id !== idToDelete);
   renderProductsTable(allProducts);
   deletingId = null;
-  await fetch(`/api/products/${idToDelete}`, { method: 'DELETE', headers: authH() });
+  try {
+    const res = await fetch(`/api/products/${idToDelete}`, { method: 'DELETE', headers: authH() });
+    if (!res.ok) throw new Error('Error del servidor');
+  } catch (err) {
+    await loadProducts();
+    alert('Error al eliminar el producto. Intentá de nuevo.');
+    return;
+  }
+  await loadProducts();
   await loadDashboard();
 });
 
