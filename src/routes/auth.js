@@ -9,7 +9,7 @@ router.post('/login', async (req, res) => {
   }
   const match = await bcrypt.compare(password, process.env.ADMIN_PASS_HASH);
   if (!match) return res.status(401).json({ error: 'Credenciales incorrectas' });
-  const token = jwt.sign({ user: username }, process.env.JWT_SECRET, { expiresIn: '24h' });
+  const token = jwt.sign({ user: username }, process.env.JWT_SECRET, { expiresIn: '30d' });
   res.json({ token });
 });
 

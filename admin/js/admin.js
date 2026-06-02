@@ -7,6 +7,15 @@ const authHeaders = { 'Authorization': `Bearer ${token}`, 'Content-Type': 'appli
 function getToken() { return localStorage.getItem(TOKEN_KEY); }
 function authH() { return { 'Authorization': `Bearer ${getToken()}`, 'Content-Type': 'application/json' }; }
 
+async function authFetch(url, options = {}) {
+  const res = await fetch(url, { ...options, headers: { ...authH(), ...(options.headers || {}) } });
+  if (res.status === 401) {
+    localStorage.removeItem(TOKEN_KEY);
+    window.location.href = '/admin/login.html';
+  }
+  return res;
+}
+
 let allProducts = [];
 let deletingId = null;
 let currentImageUrl = null;
@@ -255,7 +264,7 @@ document.getElementById('confirmOk').addEventListener('click', async () => {
   renderProductsTable(allProducts);
   deletingId = null;
   try {
-    const res = await fetch(`/api/products/${idToDelete}`, { method: 'DELETE', headers: authH() });
+    const res = await authFetch(`/api/products/${idToDelete}`, { method: 'DELETE' });
     if (!res.ok) throw new Error('Error del servidor');
   } catch (err) {
     await loadProducts();
@@ -460,7 +469,7 @@ document.getElementById('slideForm').addEventListener('submit', async (e) => {
 
 async function deleteSlide(id) {
   if (!confirm('¿Eliminar este banner?')) return;
-  await fetch(`/api/slides/${id}`, { method: 'DELETE', headers: authH() });
+  await authFetch(`/api/slides/${id}`, { method: 'DELETE' });
   await loadSlides();
 }
 
