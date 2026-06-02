@@ -67,10 +67,18 @@ router.put('/:id', authMiddleware, (req, res) => {
 
 // Eliminar producto (admin)
 router.delete('/:id', authMiddleware, (req, res) => {
-  const id = parseInt(req.params.id);
-  const products = db.readProducts().filter(p => p.id !== id);
-  db.writeProducts(products);
-  res.json({ ok: true });
+  try {
+    const id = parseInt(req.params.id);
+    const products = db.readProducts();
+    const idx = products.findIndex(p => p.id === id);
+    if (idx === -1) return res.status(404).json({ error: 'Producto no encontrado' });
+    products.splice(idx, 1);
+    db.writeProducts(products);
+    res.json({ ok: true });
+  } catch (err) {
+    console.error('Error al eliminar producto:', err);
+    res.status(500).json({ error: 'Error al eliminar producto' });
+  }
 });
 
 module.exports = router;

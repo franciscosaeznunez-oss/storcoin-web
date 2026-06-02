@@ -1,3 +1,5 @@
 node_modules/
 .env
 data/garci.db
+data/products.json
+data/slides.json
