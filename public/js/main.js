@@ -442,10 +442,6 @@ async function loadConfig() {
     document.getElementById('footer-text').textContent = cfg.hero_subtitle || '';
     const heroLogoImg = document.getElementById('hero-logo-img');
     if (heroLogoImg && cfg.logo_url) heroLogoImg.src = cfg.logo_url;
-    if (cfg.logo_url) {
-      const fav = document.getElementById('favicon');
-      if (fav) fav.href = cfg.logo_url;
-    }
     const setBtnLink = (id) => {
       const btn = document.getElementById(id);
       if (btn) btn.onclick = () => window.open(waLink, '_blank');
