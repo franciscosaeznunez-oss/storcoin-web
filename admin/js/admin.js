@@ -241,10 +241,12 @@ document.getElementById('confirmCancel').addEventListener('click', () => {
 });
 document.getElementById('confirmOk').addEventListener('click', async () => {
   if (!deletingId) return;
-  await fetch(`/api/products/${deletingId}`, { method: 'DELETE', headers: authH() });
+  const idToDelete = deletingId;
   document.getElementById('confirmModal').classList.remove('open');
+  allProducts = allProducts.filter(p => p.id !== idToDelete);
+  renderProductsTable(allProducts);
   deletingId = null;
-  await loadProducts();
+  await fetch(`/api/products/${idToDelete}`, { method: 'DELETE', headers: authH() });
   await loadDashboard();
 });
 
