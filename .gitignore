@@ -3,3 +3,4 @@ node_modules/
 data/garci.db
 data/products.json
 data/slides.json
+data/config.json
