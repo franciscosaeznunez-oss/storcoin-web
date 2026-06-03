@@ -81,7 +81,7 @@ function resetAutoplay() {
 const CATEGORY_ICONS = {
   'Abarrote': '🛒', 'Bebidas': '🥤', 'Lácteos': '🥛', 'Limpieza': '🧹',
   'Carnes': '🥩', 'Frutas': '🍎', 'Verduras': '🥦', 'Panadería': '🥖',
-  'Congelados': '🧊', 'Snacks': '🍪', 'Condimentos': '🧂',
+  'Congelados': '🧊', 'Snacks': '🍪', 'Condimentos': '🧂', 'Mascotas': '🐾',
 };
 
 function formatPrice(n) {
