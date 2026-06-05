@@ -16,6 +16,20 @@ async function authFetch(url, options = {}) {
   return res;
 }
 
+async function authUpload(fd) {
+  const res = await fetch('/api/upload', {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${getToken()}` },
+    body: fd,
+  });
+  if (res.status === 401) {
+    localStorage.removeItem(TOKEN_KEY);
+    window.location.href = '/admin/login.html';
+    return null;
+  }
+  return res;
+}
+
 let allProducts = [];
 let deletingId = null;
 let currentImageUrl = null;
@@ -187,11 +201,8 @@ document.getElementById('fileInput').addEventListener('change', async (e) => {
   try {
     const fd = new FormData();
     fd.append('image', file);
-    const res = await fetch('/api/upload', {
-      method: 'POST',
-      headers: { 'Authorization': `Bearer ${getToken()}` },
-      body: fd,
-    });
+    const res = await authUpload(fd);
+    if (!res) return;
     let data; try { data = await res.json(); } catch { data = {}; }
     if (!res.ok) throw new Error(data.error || `Error del servidor (${res.status})`);
     currentImageUrl = data.url;
@@ -288,7 +299,8 @@ document.getElementById('logoFileInput').addEventListener('change', async (e) =>
   errEl.textContent = '';
   try {
     const fd = new FormData(); fd.append('image', file);
-    const res = await fetch('/api/upload', { method: 'POST', headers: { 'Authorization': `Bearer ${getToken()}` }, body: fd });
+    const res = await authUpload(fd);
+    if (!res) return;
     let data; try { data = await res.json(); } catch { data = {}; }
     if (!res.ok) throw new Error(data.error || `Error del servidor (${res.status})`);
     currentLogoUrl = data.url;
@@ -428,7 +440,8 @@ document.getElementById('slideFileInput').addEventListener('change', async (e) =
   prev.innerHTML = '<p style="font-size:.85rem;color:#7f8c8d">Subiendo imagen...</p>';
   try {
     const fd = new FormData(); fd.append('image', file);
-    const res = await fetch('/api/upload', { method: 'POST', headers: { 'Authorization': `Bearer ${getToken()}` }, body: fd });
+    const res = await authUpload(fd);
+    if (!res) return;
     let data; try { data = await res.json(); } catch { data = {}; }
     if (!res.ok) throw new Error(data.error || `Error del servidor (${res.status})`);
     currentSlideImageUrl = data.url;
