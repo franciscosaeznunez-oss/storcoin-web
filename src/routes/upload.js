@@ -30,8 +30,16 @@ router.post('/', authMiddleware, upload.single('image'), async (req, res) => {
     });
     res.json({ url: result.secure_url });
   } catch (err) {
-    res.status(500).json({ error: 'Error al subir imagen: ' + err.message });
+    console.error('Cloudinary upload error:', err);
+    res.status(500).json({ error: 'Error al subir imagen: ' + (err.message || JSON.stringify(err)) });
   }
+});
+
+router.use((err, req, res, next) => {
+  if (err.code === 'LIMIT_FILE_SIZE') {
+    return res.status(400).json({ error: 'Imagen demasiado grande. Máximo 5MB.' });
+  }
+  res.status(400).json({ error: err.message || 'Error al procesar imagen' });
 });
 
 module.exports = router;

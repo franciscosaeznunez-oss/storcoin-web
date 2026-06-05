@@ -192,8 +192,8 @@ document.getElementById('fileInput').addEventListener('change', async (e) => {
       headers: { 'Authorization': `Bearer ${getToken()}` },
       body: fd,
     });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Error al subir');
+    let data; try { data = await res.json(); } catch { data = {}; }
+    if (!res.ok) throw new Error(data.error || `Error del servidor (${res.status})`);
     currentImageUrl = data.url;
     preview.innerHTML = `<img src="${data.url}" />`;
   } catch (err) {
@@ -289,8 +289,8 @@ document.getElementById('logoFileInput').addEventListener('change', async (e) =>
   try {
     const fd = new FormData(); fd.append('image', file);
     const res = await fetch('/api/upload', { method: 'POST', headers: { 'Authorization': `Bearer ${getToken()}` }, body: fd });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Error al subir');
+    let data; try { data = await res.json(); } catch { data = {}; }
+    if (!res.ok) throw new Error(data.error || `Error del servidor (${res.status})`);
     currentLogoUrl = data.url;
     wrap.innerHTML = `<img src="${data.url}" style="width:100%;height:100%;object-fit:contain" />`;
     document.getElementById('logoRemoveBtn').style.display = 'block';
@@ -429,8 +429,8 @@ document.getElementById('slideFileInput').addEventListener('change', async (e) =
   try {
     const fd = new FormData(); fd.append('image', file);
     const res = await fetch('/api/upload', { method: 'POST', headers: { 'Authorization': `Bearer ${getToken()}` }, body: fd });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Error al subir');
+    let data; try { data = await res.json(); } catch { data = {}; }
+    if (!res.ok) throw new Error(data.error || `Error del servidor (${res.status})`);
     currentSlideImageUrl = data.url;
     prev.innerHTML = `<img src="${data.url}" />`;
   } catch (err) {
